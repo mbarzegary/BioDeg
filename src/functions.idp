@@ -1,0 +1,18 @@
+// basic functions used all over the code
+
+IFMACRO(!idpFunctions)
+macro idpFunctions 1 // prevent multiple include statements
+
+macro grad(f) [dx(f), dy(f), dz(f)] //eom
+
+macro print(text)
+{
+	cout << text << endl;
+} //
+
+macro printDivider
+{
+	cout << "=============================================================" << endl;
+} //
+
+ENDIFMACRO

@@ -1,0 +1,66 @@
+// solving the PDEs in parallel
+
+IFMACRO(!idpSolver)
+macro idpSolver 1 // prevent multiple include statements
+
+if (mpirank==0) { print("Solving level set equation...") }
+
+// solve level set PDE to get phi function
+Ai = shrink(SpaceP1, SpaceP1, tgv=TGV); // left hand side terms
+mpiAllReduce(Ai, A, mpiCommWorld, mpiSUM); // wiat for all processes to compute their contribution and then collect them all
+Bi = shrink(0, SpaceP1); // right hand side terms
+mpiAllReduce(Bi, B, mpiCommWorld, mpiSUM);
+set(A,solver=sparsesolver,master=-1); // solve using MUMPS solver, no need to specify config file (unlike MUMPS_FreeFem)
+phi[] = A^-1 * B; // solve the assembled system
+
+// phi is changed, so we have to detect the scaffold region again
+scaffold = (phi > 0);
+
+if (doRedistance) // if it is configured to redistance distance function
+{
+  if (mpirank==0) // redistancing is performed only in process #0
+  {
+    if (t >= timeToRedistance) // if redistancing should be done in current time step
+    {
+      print("Performing redistancing...")
+      distance(Mesh, phi, phiTemp[]);
+      phi = phiTemp;
+      timeToRedistance += dtRedistance; // the next time in which redistancing will be performed
+    }
+  }
+  broadcast(processor(0), phi[]);
+}
+
+if (mpirank==0) { print("Solving Mg concentration equation...") }
+
+// solve Mg PDE to get Mg concentration
+Ai = magnes(SpaceP1, SpaceP1, tgv=TGV);
+mpiAllReduce(Ai, A, mpiCommWorld, mpiSUM);
+Bi = magnes(0, SpaceP1);
+mpiAllReduce(Bi, B, mpiCommWorld, mpiSUM);
+set(A,solver=sparsesolver, master=-1);
+Mg[] = A^-1 * B;
+
+if (mpirank==0) { print("Solving Cl ion concentration equation...") }
+
+// solve Cl PDE to get pchloride ion concentration
+Ai = chloride(SpaceP1, SpaceP1, tgv=TGV);
+mpiAllReduce(Ai, A, mpiCommWorld, mpiSUM);
+Bi = chloride(0, SpaceP1);
+mpiAllReduce(Bi, B, mpiCommWorld, mpiSUM);
+set(A,solver=sparsesolver, master=-1);
+Cl[] = A^-1 * B;
+
+if (mpirank==0) { print("Solving protective film formation equation...") }
+
+// solve film PDE to get protective film concentration
+Ai = film(SpaceP1, SpaceP1, tgv=TGV);
+mpiAllReduce(Ai, A, mpiCommWorld, mpiSUM);
+Bi = film(0, SpaceP1);
+mpiAllReduce(Bi, B, mpiCommWorld, mpiSUM);
+set(A,solver=sparsesolver, master=-1);
+F[] = A^-1 * B;
+
+scaffold = (phi > 0);
+
+ENDIFMACRO

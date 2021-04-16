@@ -1,0 +1,72 @@
+// load modules
+include "modules.idp"
+
+// load subroutines to read command line arguments
+include "getARGV.idp"
+
+// load basic macros
+include "functions.idp"
+
+// simulation, material, geometry, and solver parameters
+include "parameters.idp"
+
+// create and configure the initial mesh
+include "geometry.idp"
+
+// definition of finite element and simulation variables
+include "variables.idp"
+
+// load weak forms of the problem PDEs
+include "weak.idp"
+
+// initial conditions and setup
+include "initial.idp"
+
+// main time lopp
+for(real t=0.; t<Tfinal; t += dt)
+{
+  // due to some differences in different MPI implementations, we should reinitialize the
+  // A and b matrices (Ax=b) in each step, so it is the same as if we declare them inside loop
+  matrix A, Ai;
+  real[int] B(SpaceP1.ndof), Bi(SpaceP1.ndof);
+
+  // store previous value of solution spaces, required for finite difference discretization of time
+  phiold  = phi;
+  Fold = F;
+  Mgold = Mg;
+  Clold = Cl;
+
+  if (mpirank==0) // saving output as well as calculation of interface velocity are handled in process #0.
+  {
+    scaffoldSize = int3d(Mesh)(scaffold);
+    printDivider;
+    print("Time: " + t + "    Step: " + count + "    Evolved H2: " + (Vinit - scaffoldSize)*conv)
+    print("Initial size: " + Vinit + "    Current size: " + scaffoldSize
+          + "    % Change: " + ((Vinit - scaffoldSize) / Vinit * 100))
+    printDivider;
+
+    // save output to disk if it should be
+    include "save.idp"
+
+    // calcualte interface shrinkage velocity
+    include "interface.idp"
+  }
+  // after calcualtion, process #0 broadcasts values used in the weak forms to other processes
+  // all other processes will wait at this point for process #0 to finish computaion of interface velocity
+  broadcast(processor(0), normgradphi[]);
+  broadcast(processor(0), DeMg[]);
+  broadcast(processor(0), DeCl[]);
+  broadcast(processor(0), v[]);
+
+  // solve the PDEs in parallel and redistance distance function if required
+  include "solver.idp"
+
+  // perform adaptive mesh refinement if configured to do so
+  include "adaptive.idp"
+
+  count += 1;
+
+  // just to be sure that all processes are in line to go to next iteration
+  mpiBarrier(mpiCommWorld);
+
+}

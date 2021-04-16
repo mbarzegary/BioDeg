@@ -1,0 +1,29 @@
+// handling result output operations
+
+IFMACRO(!idpSave)
+macro idpSave 1 // prevent multiple include statements
+
+if (count % saveEach == 0) // results should be saved in current time step
+{
+  if (writeVtkOutput) // write results to vtk file formmat in a way that can be imported in Paraview as a group
+  {
+    print ("Saving VTK file...")
+    savevtk(vtkOutputFilename+count+".vtk", Mesh, phi, Mg, F, Cl, dataname="phi Mg F Cl");
+  }
+
+  print ("Saving text output...")
+
+  ofstream output(textOutputFilename, append);
+  if (count == 0) // write extra information to the beginning of the output file
+  {
+    // these are examples of writing different data to the beginning so they can be postprocessed later
+    // displacement << "DOF: " << SpaceP1.ndof << endl;
+    // displacement << "Elements: " << Mesh.nt << endl;
+    output << k1 << "\t" << k2 << "\t" << DMg << "\t" << DCl << endl;
+  }
+  // writing current time and evolved hydrogen to the output file
+  output.precision(6);
+  output << t << "\t" << (Vinit - scaffoldSize)*conv << "\n";
+}
+
+ENDIFMACRO

@@ -1,0 +1,26 @@
+// loading different modules used for simulation
+
+IFMACRO(!idpModules)
+macro idpModules 1 // prevent multiple include statements
+
+load "msh3"
+// necessary to work with 3D meshes inside FreeFEM
+
+load "tetgen"
+// used to generate the automatic initial mesh as well as adaptive mesh refinement
+
+load "mshmet"
+// used to calculate mesh refinement criterion for each mesh
+
+load "iovtk"
+// used to save result in vtk format
+
+load "MUMPS"
+// used to solve the assembled system of equations
+// load "MUMPS_FreeFem"
+// previous syntax to call MUMPS module. does not work in some platforms
+
+load "distance"
+// used to redistancing the distance function of the level set method
+
+ENDIFMACRO

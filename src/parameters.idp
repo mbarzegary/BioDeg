@@ -1,0 +1,61 @@
+// all the parameters that configure the overall process of simulation
+
+IFMACRO(!idpParameters)
+macro idpParameters 1 // prevent multiple include statements
+
+// if one parameter needs to be read from command line args, the syntax is as follows:
+// real k1 = getARGV("-k1", 2.); //for floats
+// int run = getARGV("-run", 1); //for integers
+
+verbosity = 0; // ask FreeFEM not to print info on terminal
+
+
+// Solver parameters
+real TGV = 1e8; //Huge value used to implement Dirichlet boundary conditions
+
+string textOutputFilename = "output/result.txt"; // path to text output file
+string vtkOutputFilename = "output/output-"; // path to text output file
+bool writeVtkOutput = true; // save vtk output or not
+bool saveInitialMesh = false; // whether save initial mesh after refinement in vtk
+
+bool refineInitialMesh = true; // should initial mesh be refined based on distance function
+bool refineMeshDuringSimulation = false; // should mesh be refined during simulation
+bool keepPreviousRefinedMesh = false; // adapt the mesh in the interface and do not modify previous refined mesh
+bool doRedistance = false; // whether redistance the distance function during simulation or not
+real scaffoldChangeThreshold = 5.0; // shrink percentage at which mesh should be refined again
+
+
+// Geometry parameters
+real L = 20.; // length of the main mesh box (mm)
+int meshSize = 32; // number of mesh nodes on each edge of the box
+real mshmetError = 4e-2; // tolerance for mesh refinement, used by mshmet
+
+
+// Time parameters
+real dt = 0.05; // time step (hour)
+int saveEach = 1.0 / dt; // number of steps between each output.
+// Here it is calculated to save every 1.0 hour, assuming dt is a proper multiplier.
+real Tfinal = 22.; // final time (hour)
+Tfinal += dt;
+real dtRedistance = 0.05; // time to each redistance of the distance funtion
+
+
+// Material parameters
+real tau = 1; // torquosity of the film
+real eps = 0.55; // porosity of the film
+real del = 1; // constrictivity
+
+real k1 = 2; // film formation rate (1/day)
+real k2 = 1e9; // film disolution rate (mm^6/day.g^2)
+real DMg = 0.00075; // diffusion coefficient of Mg (mm^2/day)
+real DCl = 0.24; // diffusion coefficient of Cl (mm^2/day)
+
+real Mgsolid = 1735.0*1e-6; // Mg density (g/mm^3)
+real Fsolid = 2344.6*1e-6; // density of the film (g/mm^3)
+real Fmax = Fsolid * (1 - eps); // maximum protective film concentration (g/mm^3)
+real Mgbc = 134.*1e-6; // saturation concentration (g/mm^3)
+
+real alpha = -0.001340346506; // value used to calculate initial velocity of the interface
+
+
+ENDIFMACRO

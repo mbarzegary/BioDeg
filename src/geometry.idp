@@ -1,0 +1,74 @@
+// defining the geometry of the scaffold and constructing the msh
+
+IFMACRO(!idpGeometry)
+macro idpGeometry 1 // prevent multiple include statements
+
+// Create initial mesh
+mesh3 Mesh; // main mesh file
+mesh3 initialMesh; // backup of the initial mesh, not adapted, useful for mesh refinement during simulation
+if (mpirank==0) // mesh generation only in one MPI process
+{
+  initialMesh = cube(2, 2, 2, [L*x, L*y, L*z]); // initial mesh is 2*2*2 but then is modified using tetgen
+  real[int] domain = [0, 0, 0, 0, 1];
+  // initla simple mesh is converted to a complex tetrahedral mesh using tetgem
+  initialMesh = tetgreconstruction(initialMesh, switch="raAQ", regionlist=domain, sizeofvolume=(L*1./meshSize)^3 / 6);
+  // if one wants to read external mesh, the following line should be uncommented (and all above lines commented)
+  // initialMesh = readmesh3("Box.mesh");
+  Mesh = initialMesh; // we will work with Mesh from now on. The initialMesh remains unmodified.
+  // divide the mesh for parallelization according to the number of available MPI processes
+  real c = mpisize/real(Mesh.nt);
+  Mesh=change(Mesh, fregion= min(mpisize-1,int(nuTriangle*c)));
+}
+broadcast(processor(0), Mesh); // all processes wait for process #0 to give them the new Mesh
+
+// creating Finite element spaces
+fespace SpaceP1(Mesh, P1); // used for all the dependent variables and distance funtion
+fespace SpaceP0(Mesh, P0); // used to calculate the available scaffold volume
+
+// function to define the shape of the scaffold
+func box = (x > 3.5) * (x < 16.5) * (y > 3.5) * (y < 16.5) * (z > 8) * (z < 12);
+
+SpaceP1 phi = box - 0.5; // main distance function, positive inside and negative outside of the scaffold
+SpaceP1 phiTemp; // temporary variable for redistancing distance function
+SpaceP1 mm; //mshmet metrics for mesh adaptation
+
+if (refineInitialMesh) // adapt initial mesh according to the phi function
+{
+  if (mpirank == 0) // mesh refinement is done only in one process
+  {
+    Mesh=change(Mesh, fregion = 0); // mesh is divided into different labels before, so we should reset the labels first
+    mm = 0.;
+    // computing the mesh adaptation index for each element using mshmet to pass it to tetgen
+    mm[]=mshmet(Mesh,(phi>0),normalization=1,aniso=0,nbregul=1,hmin=4e-2,hmax=0.8,err=mshmetError);
+    Mesh=tetgreconstruction(Mesh,switch="raAQ",sizeofvolume=mm*mm*mm/6.); // actual mesh refinement using tetgen
+    // then, again, divide the mesh for parallelization
+    real c = mpisize/real(Mesh.nt);
+    Mesh=change(Mesh,fregion= min(mpisize-1,int(nuTriangle*c)));
+  }
+  broadcast(processor(0), Mesh);
+  phi = phi; // mesh is changed, so we have to interpolate distance function variable into new mesh
+}
+
+if (mpirank==0)
+{
+  // print mesh and problem dimentions
+  printDivider;
+  print("Finite Element DOF: " + SpaceP1.ndof);
+  print("Number of Elements: " + Mesh.nt);
+  if (saveInitialMesh) // save the mesh after possible adaptation
+  {
+    cout << "Saving initial mesh ..." << endl;
+    savevtk("initialMesh.vtk", Mesh, phi, dataname="phi");
+  }
+}
+
+// redistancing is mandatory at the beginning
+if (mpirank==0) // only one process does the redistancing
+{
+  distance(Mesh, phi, phiTemp[]);
+  phi = phiTemp;
+}
+broadcast(processor(0), phi[]); // broadcast is a collective task in MPI, so there is no need to call mpiBarrier
+
+
+ENDIFMACRO
