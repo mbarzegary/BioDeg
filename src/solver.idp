@@ -57,7 +57,7 @@ if (mpirank==0) { printElapsedTime }
 
 if (mpirank==0) { print("Solving protective film formation equation..."); setCPUTime }
 
-// solve film PDE to get protective film concentration
+// // solve film PDE to get protective film concentration
 Loc = film(SpaceP1, SpaceP1);
 B = film(0, SpaceP1);
 A = Loc;

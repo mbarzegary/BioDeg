@@ -7,6 +7,9 @@ load "PETSc"
 // used for high-performance computing implementation
 
 macro dimension()3// EOM
+// uncomment the line below to use parmetis instead of metis
+// should run it with -parmetis_worker <number> switch
+// macro partitioner()parmetis// EOM
 include "macro_ddm.idp"
 // macros for domain decomposition methods
 

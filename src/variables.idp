@@ -23,6 +23,8 @@ real h; // smallest element size, used to compute interface velocity
 real vDenom = 1 / (Mgsolid - Mgbc); // denominator of the interface velocity equation
 real Vinit; // inital volume of the scaffold
 
+real alpha; // value used to calculate initial velocity of the interface
+
 // variables used for determining when to refine mesh during simulation (if necessary)
 real scaffoldSize;
 real scaffoldSizeOld;

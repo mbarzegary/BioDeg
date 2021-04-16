@@ -36,8 +36,15 @@ SpaceP1 mm; //mshmet metrics for mesh adaptation
 if (mpirank == 0)
 {
   if (importMesh)
+  {
     for (int i = 0; i < Mesh.nv; i++)
       phi[][i] = processRegion(Mesh(Mesh(i).x, Mesh(i).y, Mesh(i).z).region);
+    if (improveImportedMesh)
+      for (int i = 0; i < Mesh.nbe; i++)
+        if (Mesh.be(i).label==surfaceLabel)
+      		if (phi[][Mesh.be(i)[0]] == -0.5 && phi[][Mesh.be(i)[1]] == -0.5)
+      			phi[][Mesh.be(i)[2]] = 0.5;
+  }
   else
     phi = box - 0.5;
 }
@@ -82,6 +89,7 @@ if (mpirank == 0)
   print("Partitioning the mesh...")
 real[int] D;
 int[int][int] restriction;
+int[int] n2o;
 {
     fespace SpaceP0Temp(Mesh, P0);
     SpaceP0Temp part;
@@ -90,7 +98,7 @@ int[int][int] restriction;
     partitionerPar(part[], Mesh, mpiCommWorld, size);
     buildWithPartitioning(Mesh, part[], 1, restriction, D, Pk, mpiCommWorld);
     part = part;
-    MeshNoOverlap = trunc(Mesh, abs(part - mpirank) < 1e-1);
+    MeshNoOverlap = trunc(Mesh, abs(part - mpirank) < 1e-1, new2old = n2o);
 }
 
 phi = phi;

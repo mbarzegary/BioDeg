@@ -20,6 +20,9 @@ include "variables.idp"
 // load weak forms of the problem PDEs
 include "weak.idp"
 
+// newton solver to calculate the stefan initial velocity
+include "stefan.idp"
+
 // initial conditions and setup
 include "initial.idp"
 
@@ -70,5 +73,7 @@ for(real t=0.; t<Tfinal; t += dt)
 
   // just to be sure that all processes are in line to go to next iteration
   mpiBarrier(mpiCommWorld);
-
 }
+
+// save the latest state of the model in the last time step 
+include "savelast.idp"

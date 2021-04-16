@@ -33,8 +33,8 @@ intN(Mesh,qfV=qfV1lump,optimize=0)(F*v2/dt) + intN(Mesh,qfV=qfV1lump,optimize=0)
 varf chloride(Cl, v3) =
 intN(Mesh,qfV=qfV1lump,optimize=0)(Cl*v3/dt) + intN(Mesh,qfV=qfV1lump,optimize=0)(Clold*v3/dt)
 + intN(Mesh)( DeCl*(dx(Cl)*dx(v3) + dy(Cl)*dy(v3) + dz(Cl)*dz(v3)) )
-+ intN(Mesh,qfV=qfV1lump)((phi > 0)*TGV*Cl*v3)
-+ intN(Mesh,qfV=qfV1lump)((phi > 0)*TGV*Clbc*v3)
+// + intN(Mesh,qfV=qfV1lump)((phi > 0)*TGV*Cl*v3)
+// + intN(Mesh,qfV=qfV1lump)((phi > 0)*TGV*Clbc*v3)
 ;
 
 // weak form of OH ion concentration PDE
@@ -42,8 +42,8 @@ varf hydroxide(OH, v4) =
 intN(Mesh,qfV=qfV1lump,optimize=0)(OH*v4/dt) + intN(Mesh,qfV=qfV1lump,optimize=0)(OHold*v4/dt)
 + intN(Mesh)( DeOH*(dx(OH)*dx(v4) + dy(OH)*dy(v4) + dz(OH)*dz(v4)) )
 + intN(Mesh,qfV=qfV1lump)((phi <= 0)*k2*F*Cl*Cl*v4)
-+ intN(Mesh,qfV=qfV1lump)((phi > 0)*TGV*OH*v4)
-+ intN(Mesh,qfV=qfV1lump)((phi > 0)*TGV*OHbc*v4)
+// + intN(Mesh,qfV=qfV1lump)((phi > 0)*TGV*OH*v4)
+// + intN(Mesh,qfV=qfV1lump)((phi > 0)*TGV*OHbc*v4)
 ;
 
 // weak form of the level set PDE

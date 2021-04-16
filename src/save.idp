@@ -24,11 +24,12 @@ if (count % saveEach == 0) // results should be saved in current time step
       // these are examples of writing different data to the beginning so they can be postprocessed later
       // output << "DOF: " << SpaceP1.ndof << endl;
       // output << "Elements: " << Mesh.nt << endl;
-      output << k1 << "\t" << k2 << "\t" << DMg << "\t" << DCl << endl;
+      output << k1 << "\t" << k2 << "\t" << DMg << "\t" << DCl << "\t"
+            << alpha << "\t" << Fcoef << "\t" << alphaCoeff << endl;
     }
     // writing current time and evolved hydrogen to the output file
     output.precision(6);
-    output << t << "\t" << (Vinit - scaffoldSize)*conv << "\n";
+    output << t << "\t" << (Vinit - scaffoldSize) * conv * saveMultiplier << "\n";
   }
 }
 

@@ -29,9 +29,9 @@ func int printHeader()
 	cout<<"|                                              __/ |        |\n";
 	cout<<"|                                             |___/         |\n";
 	cout<<"|                                                           |\n";
-	cout<<"|              KU Leuven &  University of Liege             |\n";
+	cout<<"|              KU Leuven  &  University of Liege            |\n";
 	cout<<"|                                                           |\n";
-	cout<<"|               +------> Version: 0.4 <------+              |\n";
+	cout<<"|               +------> Version: 0.5 <------+              |\n";
 	cout<<"|                                                           |\n";
 	cout<<"+-----------------------------------------------------------+\n";
 	return 0;
