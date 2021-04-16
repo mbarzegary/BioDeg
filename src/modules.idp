@@ -3,7 +3,15 @@
 IFMACRO(!idpModules)
 macro idpModules 1 // prevent multiple include statements
 
-load "msh3"
+load "PETSc"
+// used for high-performance computing implementation
+
+macro dimension()3// EOM
+include "macro_ddm.idp"
+// macros for domain decomposition methods
+
+// loaded automatically by PETSc and DDM macros
+// load "msh3"
 // necessary to work with 3D meshes inside FreeFEM
 
 load "tetgen"
@@ -12,15 +20,21 @@ load "tetgen"
 load "mshmet"
 // used to calculate mesh refinement criterion for each mesh
 
-load "iovtk"
+// loaded automatically by PETSc and DDM macros
+// load "iovtk"
 // used to save result in vtk format
 
-load "MUMPS"
+// not required when PETSc and DDM macros are loaded
+// load "MUMPS"
 // used to solve the assembled system of equations
 // load "MUMPS_FreeFem"
 // previous syntax to call MUMPS module. does not work in some platforms
 
 load "distance"
 // used to redistancing the distance function of the level set method
+
+include "getARGV.idp"
+// load subroutines to read command line arguments
+
 
 ENDIFMACRO

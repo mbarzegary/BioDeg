@@ -5,13 +5,14 @@ macro idpInterface 1 // prevent multiple include statements
 
 if (mpirank==0) { print("Computing interface shrinkage velocity...") }
 
-// if mesh would be refined during simulation, the smallest element size should be
-// calculated at each time step, otherwise it has been calculated before the time loop
-if (refineMeshDuringSimulation)
-{
-  hhh = hTriangle;
-  h = hhh[].min;
-}
+// not compatible with new parallelization approach
+// // if mesh would be refined during simulation, the smallest element size should be
+// // calculated at each time step, otherwise it has been calculated before the time loop
+// if (refineMeshDuringSimulation)
+// {
+//   hhh = hTriangle;
+//   h = hhh[].min;
+// }
 
 // compute the normal value of the distance function and its gradient at each node
 normgradphi = sqrt(grad(phi)'*grad(phi)+1e-6);
@@ -29,15 +30,24 @@ DeMg = DMg * ((1 - F/Fmax) + (F/Fmax)*del*eps/tau);
 DeCl = DCl * ((1 - F/Fmax) + (F/Fmax)*del*eps/tau);
 DeOH = DOH * ((1 - F/Fmax) + (F/Fmax)*del*eps/tau);
 
+// if (t > 0)
+// savevtk("test.vtu", Mesh, phi, Mg, F, Cl, OH, dataname="phi Mg F Cl OH",
+//         order = orderOut, append = count ? true : false);
+
 // calculate velocity of the interface
-if(t == 0)
+if (t == 0)
 {
   v = 2*alpha/sqrt(dt);
 }
 else
 {
+  // the mesh is distributed, so the interpolation may be "ill-conditioned"
+  // as a result, we should change the interpolation method before doing that
+  searchMethod = 0;
   v = - (Mg(x+dirx, y+diry, z+dirz) - Mg(x+2*dirx, y+2*diry, z+2*dirz)) * DeMg(x+dirx, y+diry, z+dirz) * vDenom / h;
+  searchMethod = 1;
   v = min(v, 0);
 }
+mpiBarrier(mpiCommWorld);
 
 ENDIFMACRO

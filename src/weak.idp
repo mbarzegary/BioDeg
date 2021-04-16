@@ -9,50 +9,47 @@ macro idpWeak 1 // prevent multiple include statements
 // creating A and b (Ax=b) easy to implement. other approach could be defining separate varf
 // statements for right and left hand sides of the weak form.
 
-// parallelization is accomplished by first decomposing mesh labels (done previously at mesh
-// generation step) and then integrating equations over each process label only. as a result,
-// each MPI process performs integration on its own part of the mesh.
 
 // weak form of Mg ion concentration PDE
 varf magnes(Mg, v1) =
-int3d(Mesh,mpirank,qfV=qfV1lump,optimize=0)(Mg/dt*v1) + int3d(Mesh,mpirank,qfV=qfV1lump,optimize=0)(Mgold/dt*v1)
-+ int3d(Mesh,mpirank)( DeMg*(dx(Mg)*dx(v1) + dy(Mg)*dy(v1) + dz(Mg)*dz(v1)) )
-- int3d(Mesh,mpirank,qfV=qfV1lump)((phi <= 0)*k1*Mg*F/Fmax*v1)
-+ int3d(Mesh,mpirank,qfV=qfV1lump)((phi <= 0)*k1*Mg*v1)
-+ int3d(Mesh,mpirank,qfV=qfV1lump)((phi <= 0)*k2*F*Cl*Cl*v1)
-+ int3d(Mesh,mpirank,qfV=qfV1lump)((phi > 0)*TGV*Mg*v1)
-+ int3d(Mesh,mpirank,qfV=qfV1lump)((phi > 0)*TGV*Mgbc*v1)
+intN(Mesh,qfV=qfV1lump,optimize=0)(Mg/dt*v1) + intN(Mesh,qfV=qfV1lump,optimize=0)(Mgold/dt*v1)
++ intN(Mesh)( DeMg*(dx(Mg)*dx(v1) + dy(Mg)*dy(v1) + dz(Mg)*dz(v1)) )
+- intN(Mesh,qfV=qfV1lump)((phi <= 0)*k1*Mg*F/Fmax*v1)
++ intN(Mesh,qfV=qfV1lump)((phi <= 0)*k1*Mg*v1)
++ intN(Mesh,qfV=qfV1lump)((phi <= 0)*k2*F*Cl*Cl*v1)
++ intN(Mesh,qfV=qfV1lump)((phi > 0)*TGV*Mg*v1)
++ intN(Mesh,qfV=qfV1lump)((phi > 0)*TGV*Mgbc*v1)
 ;
 
 // weak form of protective film concentration PDE
 varf film(F, v2) =
-int3d(Mesh,mpirank,qfV=qfV1lump,optimize=0)(F*v2/dt) + int3d(Mesh,mpirank,qfV=qfV1lump,optimize=0)(Fold*v2/dt)
-+ int3d(Mesh,mpirank,qfV=qfV1lump)((phi <= 0)*k1*Mg*F/Fmax*v2)
-+ int3d(Mesh,mpirank,qfV=qfV1lump)((phi <= 0)*k1*Mg*v2)
-+ int3d(Mesh,mpirank,qfV=qfV1lump)((phi <= 0)*k2*F*Cl*Cl*v2)
+intN(Mesh,qfV=qfV1lump,optimize=0)(F*v2/dt) + intN(Mesh,qfV=qfV1lump,optimize=0)(Fold*v2/dt)
++ intN(Mesh,qfV=qfV1lump)((phi <= 0)*k1*Mg*F/Fmax*v2)
++ intN(Mesh,qfV=qfV1lump)((phi <= 0)*k1*Mg*v2)
++ intN(Mesh,qfV=qfV1lump)((phi <= 0)*k2*F*Cl*Cl*v2)
 ;
 
 // weak form of chloride ion concentration PDE
 varf chloride(Cl, v3) =
-int3d(Mesh,mpirank,qfV=qfV1lump,optimize=0)(Cl*v3/dt) + int3d(Mesh,mpirank,qfV=qfV1lump,optimize=0)(Clold*v3/dt)
-+ int3d(Mesh,mpirank)( DeCl*(dx(Cl)*dx(v3) + dy(Cl)*dy(v3) + dz(Cl)*dz(v3)) )
-+ int3d(Mesh,mpirank,qfV=qfV1lump)((phi > 0)*TGV*Cl*v3)
-+ int3d(Mesh,mpirank,qfV=qfV1lump)((phi > 0)*TGV*Clbc*v3)
+intN(Mesh,qfV=qfV1lump,optimize=0)(Cl*v3/dt) + intN(Mesh,qfV=qfV1lump,optimize=0)(Clold*v3/dt)
++ intN(Mesh)( DeCl*(dx(Cl)*dx(v3) + dy(Cl)*dy(v3) + dz(Cl)*dz(v3)) )
++ intN(Mesh,qfV=qfV1lump)((phi > 0)*TGV*Cl*v3)
++ intN(Mesh,qfV=qfV1lump)((phi > 0)*TGV*Clbc*v3)
 ;
 
 // weak form of OH ion concentration PDE
 varf hydroxide(OH, v4) =
-int3d(Mesh,mpirank,qfV=qfV1lump,optimize=0)(OH*v4/dt) + int3d(Mesh,mpirank,qfV=qfV1lump,optimize=0)(OHold*v4/dt)
-+ int3d(Mesh,mpirank)( DeOH*(dx(OH)*dx(v4) + dy(OH)*dy(v4) + dz(OH)*dz(v4)) )
-+ int3d(Mesh,mpirank,qfV=qfV1lump)((phi <= 0)*k2*F*Cl*Cl*v4)
-+ int3d(Mesh,mpirank,qfV=qfV1lump)((phi > 0)*TGV*OH*v4)
-+ int3d(Mesh,mpirank,qfV=qfV1lump)((phi > 0)*TGV*OHbc*v4)
+intN(Mesh,qfV=qfV1lump,optimize=0)(OH*v4/dt) + intN(Mesh,qfV=qfV1lump,optimize=0)(OHold*v4/dt)
++ intN(Mesh)( DeOH*(dx(OH)*dx(v4) + dy(OH)*dy(v4) + dz(OH)*dz(v4)) )
++ intN(Mesh,qfV=qfV1lump)((phi <= 0)*k2*F*Cl*Cl*v4)
++ intN(Mesh,qfV=qfV1lump)((phi > 0)*TGV*OH*v4)
++ intN(Mesh,qfV=qfV1lump)((phi > 0)*TGV*OHbc*v4)
 ;
 
 // weak form of the level set PDE
 varf shrink(phi, vp) =
-int3d(Mesh,mpirank,optimize=0)(phi*vp/dt) + int3d(Mesh,mpirank,optimize=0)(phiold*vp/dt)
-+ int3d(Mesh,mpirank,optimize=0)(v*normgradphi*vp)
+intN(Mesh,optimize=0)(phi*vp/dt) + intN(Mesh,optimize=0)(phiold*vp/dt)
++ intN(Mesh,optimize=0)(v*normgradphi*vp)
 ;
 
 ENDIFMACRO

@@ -4,27 +4,28 @@ IFMACRO(!idpGeometry)
 macro idpGeometry 1 // prevent multiple include statements
 
 // Create initial mesh
-mesh3 Mesh; // main mesh file
-mesh3 initialMesh; // backup of the initial mesh, not adapted, useful for mesh refinement during simulation
+meshN Mesh; // main mesh file, will be partitioned with overlapping techniques
+meshN MeshNoOverlap; // mesh without overlapping, used to calculate the scaffold volume/area
+
 if (mpirank==0) // mesh generation only in one MPI process
 {
   if (importMesh) // if we want to read external mesh, we should properly define phi function too
   {
-    initialMesh = readmesh3(meshFileName);
+    print("Reading input mesh...")
+    Mesh = readmesh3(meshFileName);
   }
   else // generate mesh using tetgen instead
   {
-    initialMesh = cube(2, 2, 2, [L*x, L*y, L*z]); // initial mesh is 2*2*2 but then is modified using tetgen
+    Mesh = cube(2, 2, 2, [L*x, L*y, L*z]); // initial mesh is 2*2*2 but then is modified using tetgen
     real[int] domain = [0, 0, 0, 0, 1];
     // initla simple mesh is converted to a complex tetrahedral mesh using tetgem
-    initialMesh = tetgreconstruction(initialMesh, switch="raAQ", regionlist=domain, sizeofvolume=(L*1./meshSize)^3 / 6);
+    Mesh = tetgreconstruction(Mesh, switch="raAQ", regionlist=domain, sizeofvolume=(L*1./meshSize)^3 / 6);
   }
-  Mesh = initialMesh; // we will work with Mesh from now on. The initialMesh remains unmodified.
 }
 broadcast(processor(0), Mesh); // all processes wait for process #0 to give them the new Mesh
 
 // creating Finite element spaces
-fespace SpaceP1(Mesh, P1); // used for all the dependent variables and distance funtion
+fespace SpaceP1(Mesh, Pk); // used for all the dependent variables and distance funtion
 fespace SpaceP0(Mesh, P0); // used to calculate the available scaffold volume
 
 SpaceP1 phi; // main distance function, positive inside and negative outside of the scaffold
@@ -55,17 +56,6 @@ if (refineInitialMesh) // adapt initial mesh according to the phi function
   phi = phi; // mesh is changed, so we have to interpolate distance function variable into new mesh
 }
 
-// divide the mesh for parallelization according to the number of available MPI processes
-if (mpirank == 0) // only one process does the initilization
-{
-  // real c = mpisize/real(Mesh.nt);
-  // Mesh = change(Mesh, fregion= min(mpisize-1,int(nuTriangle*c)));
-  // I don't know why yet, but the above approach does not work properly when we importing
-  // an external mesh. The following messy approach has a little bit better performance
-  Mesh = change(Mesh, fregion = nuTriangle%mpisize);
-}
-broadcast(processor(0), Mesh);
-
 if (mpirank==0)
 {
   // print mesh and problem dimentions
@@ -75,7 +65,7 @@ if (mpirank==0)
   if (saveInitialMesh) // save the mesh after possible adaptation
   {
     cout << "Saving initial mesh ..." << endl;
-    savevtk("initialMesh.vtk", Mesh, phi, dataname="phi");
+    savevtk("initialMesh.vtu", Mesh, phi, dataname="phi");
   }
 }
 
@@ -87,5 +77,37 @@ if (mpirank==0) // only one process does the redistancing
 }
 broadcast(processor(0), phi[]); // broadcast is a collective task in MPI, so there is no need to call mpiBarrier
 
+// partition the mesh and create the non-overlapping as well
+if (mpirank == 0)
+  print("Partitioning the mesh...")
+real[int] D;
+int[int][int] restriction;
+{
+    fespace SpaceP0Temp(Mesh, P0);
+    SpaceP0Temp part;
+    if(mpirank == 0)
+        partitionerSeq(part[], Mesh, mpisize);
+    partitionerPar(part[], Mesh, mpiCommWorld, size);
+    buildWithPartitioning(Mesh, part[], 1, restriction, D, Pk, mpiCommWorld);
+    part = part;
+    MeshNoOverlap = trunc(Mesh, abs(part - mpirank) < 1e-1);
+}
+
+phi = phi;
+if (saveInitialPartitionedMesh)
+{
+  savevtk("initialMesh_Partitioned_NoOverlap.vtu", MeshNoOverlap, region, dataname="region", append=false);
+  savevtk("initialMesh_Partitioned_Overlapped.vtu", Mesh, region, dataname="region", append=false);
+}
+
+int total = 0; // total number of DOF
+int currentDOF = SpaceP1.ndof;
+mpiAllReduce(currentDOF, total, mpiCommWorld, mpiSUM);
+if (mpirank == 0)
+{
+  print("The average DOF in each MPI process: " + total / mpisize);
+  print("Number of MPI processes: " + mpisize);
+}
+// print("DOF in MPI process " + mpirank + ": " + SpaceP1.ndof);
 
 ENDIFMACRO

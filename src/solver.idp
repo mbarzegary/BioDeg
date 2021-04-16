@@ -6,13 +6,10 @@ macro idpSolver 1 // prevent multiple include statements
 if (mpirank==0) { print("Solving level set equation..."); setCPUTime }
 
 // solve level set PDE to get phi function
-A = shrink(SpaceP1, SpaceP1); // left hand side terms
-// the following operation was required in older versions of FreeFEM, but with newer versions, it doesn't work
-// mpiAllReduce(Ai, A, mpiCommWorld, mpiSUM); // wiat for all processes to compute their contribution and then collect them all
+Loc = shrink(SpaceP1, SpaceP1); // left hand side terms
 B = shrink(0, SpaceP1); // right hand side terms
-// same as previous collective task, not required anymore
-// mpiAllReduce(Bi, B, mpiCommWorld, mpiSUM);
-set(A,solver=sparsesolver,master=-1); // solve using MUMPS solver, no need to specify config file (unlike MUMPS_FreeFem)
+A = Loc;
+set(A, sparams = phiParams);
 phi[] = A^-1 * B; // solve the assembled system
 
 if (mpirank==0) { printElapsedTime }
@@ -20,37 +17,40 @@ if (mpirank==0) { printElapsedTime }
 // phi is changed, so we have to detect the scaffold region again
 scaffold = (phi > 0);
 
-if (doRedistance) // if it is configured to redistance distance function
-{
-  if (mpirank==0) // redistancing is performed only in process #0
-  {
-    if (t >= timeToRedistance) // if redistancing should be done in current time step
-    {
-      print("Performing redistancing...")
-      distance(Mesh, phi, phiTemp[]);
-      phi = phiTemp;
-      timeToRedistance += dtRedistance; // the next time in which redistancing will be performed
-    }
-  }
-  broadcast(processor(0), phi[]);
-}
+// this commented block of cod is not yet compatible with the new parallelization approach
+// if (doRedistance) // if it is configured to redistance distance function
+// {
+//   if (mpirank==0) // redistancing is performed only in process #0
+//   {
+//     if (t >= timeToRedistance) // if redistancing should be done in current time step
+//     {
+//       print("Performing redistancing...")
+//       distance(Mesh, phi, phiTemp[]);
+//       phi = phiTemp;
+//       timeToRedistance += dtRedistance; // the next time in which redistancing will be performed
+//     }
+//   }
+//   broadcast(processor(0), phi[]);
+// }
 
 if (mpirank==0) { print("Solving Mg concentration equation..."); setCPUTime }
 
 // solve Mg PDE to get Mg concentration
-A = magnes(SpaceP1, SpaceP1);
+Loc = magnes(SpaceP1, SpaceP1);
 B = magnes(0, SpaceP1);
-set(A,solver=sparsesolver, master=-1);
+A = Loc;
+set(A, sparams = mgParams);
 Mg[] = A^-1 * B;
 
 if (mpirank==0) { printElapsedTime }
 
 if (mpirank==0) { print("Solving Cl ion concentration equation..."); setCPUTime }
 
-// solve Cl PDE to get pchloride ion concentration
-A = chloride(SpaceP1, SpaceP1);
+// solve Cl PDE to get chloride ion concentration
+Loc = chloride(SpaceP1, SpaceP1);
 B = chloride(0, SpaceP1);
-set(A,solver=sparsesolver, master=-1);
+A = Loc;
+set(A, sparams = clParams);
 Cl[] = A^-1 * B;
 
 if (mpirank==0) { printElapsedTime }
@@ -58,9 +58,10 @@ if (mpirank==0) { printElapsedTime }
 if (mpirank==0) { print("Solving protective film formation equation..."); setCPUTime }
 
 // solve film PDE to get protective film concentration
-A = film(SpaceP1, SpaceP1);
+Loc = film(SpaceP1, SpaceP1);
 B = film(0, SpaceP1);
-set(A,solver=sparsesolver, master=-1);
+A = Loc;
+set(A, sparams = filmParams);
 F[] = A^-1 * B;
 
 if (mpirank==0) { printElapsedTime }
@@ -68,9 +69,10 @@ if (mpirank==0) { printElapsedTime }
 if (mpirank==0) { print("Solving pH equation..."); setCPUTime }
 
 // solve OH PDE to get hydroxide ion concentration
-A = hydroxide(SpaceP1, SpaceP1);
+Loc = hydroxide(SpaceP1, SpaceP1);
 B = hydroxide(0, SpaceP1);
-set(A,solver=sparsesolver, master=-1);
+A = Loc;
+set(A, sparams = ohParams);
 OH[] = A^-1 * B;
 
 if (mpirank==0) { printElapsedTime }

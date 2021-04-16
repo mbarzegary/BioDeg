@@ -7,23 +7,29 @@ if (count % saveEach == 0) // results should be saved in current time step
 {
   if (writeVtkOutput) // write results to vtk file formmat in a way that can be imported in Paraview as a group
   {
-    print ("Saving VTK file...")
-    savevtk(vtkOutputFilename+count+".vtu", Mesh, phi, Mg, F, Cl, OH, dataname="phi Mg F Cl OH");
+    if (mpirank == 0)
+      print ("Saving VTK file...")
+
+    savevtk(vtkOutputFilename+".vtu", Mesh, phi, Mg, F, Cl, OH, dataname="phi Mg F Cl OH",
+            order = orderOut, append = count ? true : false);
   }
 
-  print ("Saving text output...")
-
-  ofstream output(textOutputFilename, append);
-  if (count == 0) // write extra information to the beginning of the output file
+  if (mpirank == 0)
   {
-    // these are examples of writing different data to the beginning so they can be postprocessed later
-    // displacement << "DOF: " << SpaceP1.ndof << endl;
-    // displacement << "Elements: " << Mesh.nt << endl;
-    output << k1 << "\t" << k2 << "\t" << DMg << "\t" << DCl << endl;
+    print ("Saving text output...")
+
+    ofstream output(textOutputFilename, append);
+    if (count == 0) // write extra information to the beginning of the output file
+    {
+      // these are examples of writing different data to the beginning so they can be postprocessed later
+      // output << "DOF: " << SpaceP1.ndof << endl;
+      // output << "Elements: " << Mesh.nt << endl;
+      output << k1 << "\t" << k2 << "\t" << DMg << "\t" << DCl << endl;
+    }
+    // writing current time and evolved hydrogen to the output file
+    output.precision(6);
+    output << t << "\t" << (Vinit - scaffoldSize)*conv << "\n";
   }
-  // writing current time and evolved hydrogen to the output file
-  output.precision(6);
-  output << t << "\t" << (Vinit - scaffoldSize)*conv << "\n";
 }
 
 ENDIFMACRO

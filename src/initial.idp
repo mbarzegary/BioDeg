@@ -18,18 +18,25 @@ if (!refineMeshDuringSimulation) // otherwise these values will (and should) be 
 {
   hhh = hTriangle;
   h = hhh[].min; // smallest element size
+  // the value of h should be the same for all processes
+  mpiAllReduce(h, h, mpiCommWorld, mpiMIN);
 }
 
-// we should pay attention to the fact that these variables have correct value only in process #0
-// so they cannot be used in other processes
-if (mpirank==0)
-{
-  // store the inital volume size of the scaffold
-  Vinit = int3d(Mesh,optimize=0)(scaffold);
-  // compute the multiplier coefficient of hydrogen evolution equation based on ideal gas law
-  // here we use the approximation of the initial area of the scaffold
-  conv = 82.057 * 310.15 * Mgsolid / (24.305 * 0.01 * int2d(Mesh,levelset=phi)(1.));
-}
+// store the inital volume size of the scaffold
+// Vinit = int3d(Mesh,optimize=0)(scaffold);
+// in partitioned mesh, we should collect the value from different processes
+loc = intN(MeshNoOverlap)(scaffold);
+glob = 0;
+mpiAllReduce(loc, glob, mpiCommWorld, mpiSUM);
+Vinit = glob;
+
+// compute the multiplier coefficient of hydrogen evolution equation based on ideal gas law
+// here we use the approximation of the initial area of the scaffold
+loc = int2d(MeshNoOverlap, levelset=phi)(1.);
+glob = 0; // stores initial area here
+mpiAllReduce(loc, glob, mpiCommWorld, mpiSUM);
+real initialArea = glob;
+conv = 82.057 * 310.15 * Mgsolid / (24.305 * 0.01 * glob);
 scaffoldSizeOld = Vinit;
 
 // if time to each redistance is less than the time step make it equal to time step

@@ -1,9 +1,6 @@
 // load modules
 include "modules.idp"
 
-// load subroutines to read command line arguments
-include "getARGV.idp"
-
 // simulation, material, geometry, and solver parameters
 include "parameters.idp"
 
@@ -12,7 +9,7 @@ include "functions.idp"
 
 // print the program title
 if (mpirank == 0)
-	printHeader();
+  printHeader();
 
 // create and configure the initial mesh
 include "geometry.idp"
@@ -26,13 +23,16 @@ include "weak.idp"
 // initial conditions and setup
 include "initial.idp"
 
+// define matrices required for local solutions
+Mat A(SpaceP1.ndof, restriction, D);
+matrix Loc;
+real[int] B(SpaceP1.ndof);
+
 // main time loop
 for(real t=0.; t<Tfinal; t += dt)
 {
   // due to some differences in different MPI implementations, we should reinitialize the
   // A and b matrices (Ax=b) in each step, so it is the same as if we declare them inside loop
-  matrix A;
-  real[int] B(SpaceP1.ndof);
 
   // store previous value of solution spaces, required for finite difference discretization of time
   phiold  = phi;
@@ -41,34 +41,30 @@ for(real t=0.; t<Tfinal; t += dt)
   Clold = Cl;
   OHold = OH;
 
-  if (mpirank==0) // saving output as well as calculation of interface velocity are handled in process #0.
+  loc = intN(MeshNoOverlap)(scaffold);
+  glob = 0;
+  mpiAllReduce(loc, glob, mpiCommWorld, mpiSUM);
+  scaffoldSize = glob;
+
+  if (mpirank == 0)
   {
-    scaffoldSize = int3d(Mesh)(scaffold);
     printDivider;
     print("Time: " + t + "    Step: " + count + "    Evolved H2: " + (Vinit - scaffoldSize)*conv)
     print("Initial size: " + Vinit + "    Current size: " + scaffoldSize
-          + "    % Change: " + ((Vinit - scaffoldSize) / Vinit * 100))
+    + "    % Change: " + ((Vinit - scaffoldSize) / Vinit * 100))
     printDivider;
-
-    // save output to disk if it should be
-    include "save.idp"
-
-    // calcualte interface shrinkage velocity
-    include "interface.idp"
   }
-  // after calcualtion, process #0 broadcasts values used in the weak forms to other processes
-  // all other processes will wait at this point for process #0 to finish computaion of interface velocity
-  broadcast(processor(0), normgradphi[]);
-  broadcast(processor(0), DeMg[]);
-  broadcast(processor(0), DeCl[]);
-  broadcast(processor(0), DeOH[]);
-  broadcast(processor(0), v[]);
+  // save output to disk if it should be
+  include "save.idp"
+
+  // calcualte interface shrinkage velocity
+  include "interface.idp"
 
   // solve the PDEs in parallel and redistance distance function if required
   include "solver.idp"
 
   // perform adaptive mesh refinement if configured to do so
-  include "adaptive.idp"
+  // include "adaptive.idp"
 
   count += 1;
 

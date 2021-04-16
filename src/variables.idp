@@ -14,8 +14,6 @@ SpaceP1 v, normgradphi;
 SpaceP1 DeMg, DeCl, DeOH;
 //variables to keep previous step values. used for finite difference descretization of time
 SpaceP1 Mgold, Fold, Clold, phiold, OHold;
-// test function used in weak form of the PDEs
-SpaceP1 v1, v2, v3, v4, vp;
 // variables to evaluate the direction of the distance function, used to compute interface velocity
 SpaceP1 xphi, yphi, zphi, dirx, diry, dirz;
 // variable to hold the size of the elements, used to calculate the smallest element size
@@ -36,5 +34,9 @@ real count = 0; // number of current time step iteration
 real timeToRedistance = 0;  // incremental variable to determine whether redistancing should be performed in current time step or not
 
 real cpuTime; // variable to calculate time elapsed in tasks
+real glob, loc; // variables used for collecting the volume size over partitioned mesh blocks
+
+int[int] orderOut = [1, 1, 1, 1, 1]; // used to save the vtk output in point data (instead of cell data)
+
 
 ENDIFMACRO
