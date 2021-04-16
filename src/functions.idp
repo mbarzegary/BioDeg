@@ -31,7 +31,7 @@ func int printHeader()
 	cout<<"|                                                           |\n";
 	cout<<"|              KU Leuven  &  University of Liege            |\n";
 	cout<<"|                                                           |\n";
-	cout<<"|               +------> Version: 0.5 <------+              |\n";
+	cout<<"|               +------> Version: 0.6 <------+              |\n";
 	cout<<"|                                                           |\n";
 	cout<<"+-----------------------------------------------------------+\n";
 	return 0;
@@ -49,6 +49,19 @@ func real processRegion(int region)
 		return 0.5;
 	else //assuming it is mediumLabel otherwise
 		return -0.5;
+}
+
+func bool fileExists(string path)
+{
+  try
+  {
+    ifstream file(path);
+    return true;
+  }
+  catch(...)
+  {
+    return false;
+  }
 }
 
 macro setCPUTime

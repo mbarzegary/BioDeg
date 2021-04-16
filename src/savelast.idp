@@ -8,7 +8,7 @@ if (saveLastTimeStep)
   fespace SpaceNoGhost(MeshNoOverlap, Pk);
   SpaceNoGhost phiNew, MgNew, FNew, ClNew, OHNew;
 
-  int[int] R = restrict(SpaceNoGhost, SpaceP1, n2o);
+  int[int] R = restrict(SpaceNoGhost, SpaceP1, n2oOverlap);
 
   phiNew = 0;
   MgNew = 0;

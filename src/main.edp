@@ -27,7 +27,7 @@ include "stefan.idp"
 include "initial.idp"
 
 // define matrices required for local solutions
-Mat A(SpaceP1.ndof, restriction, D);
+// Mat A(SpaceP1.ndof, restriction, D);
 matrix Loc;
 real[int] B(SpaceP1.ndof);
 
@@ -60,6 +60,9 @@ for(real t=0.; t<Tfinal; t += dt)
   // save output to disk if it should be
   include "save.idp"
 
+  // save the scaffold mesh if requested
+  include "export.idp"
+
   // calcualte interface shrinkage velocity
   include "interface.idp"
 
@@ -75,5 +78,5 @@ for(real t=0.; t<Tfinal; t += dt)
   mpiBarrier(mpiCommWorld);
 }
 
-// save the latest state of the model in the last time step 
+// save the latest state of the model in the last time step
 include "savelast.idp"

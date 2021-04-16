@@ -6,6 +6,7 @@ macro idpGeometry 1 // prevent multiple include statements
 // Create initial mesh
 meshN Mesh; // main mesh file, will be partitioned with overlapping techniques
 meshN MeshNoOverlap; // mesh without overlapping, used to calculate the scaffold volume/area
+meshN MeshBackup;
 
 if (mpirank==0) // mesh generation only in one MPI process
 {
@@ -23,12 +24,13 @@ if (mpirank==0) // mesh generation only in one MPI process
   }
 }
 broadcast(processor(0), Mesh); // all processes wait for process #0 to give them the new Mesh
+MeshBackup = Mesh;
 
 // creating Finite element spaces
 fespace SpaceP1(Mesh, Pk); // used for all the dependent variables and distance funtion
 fespace SpaceP0(Mesh, P0); // used to calculate the available scaffold volume
 
-SpaceP1 phi; // main distance function, positive inside and negative outside of the scaffold
+SpaceP1 phi = 0; // main distance function, positive inside and negative outside of the scaffold
 SpaceP1 phiTemp; // temporary variable for redistancing distance function
 SpaceP1 mm; //mshmet metrics for mesh adaptation
 
@@ -37,13 +39,22 @@ if (mpirank == 0)
 {
   if (importMesh)
   {
-    for (int i = 0; i < Mesh.nv; i++)
-      phi[][i] = processRegion(Mesh(Mesh(i).x, Mesh(i).y, Mesh(i).z).region);
-    if (improveImportedMesh)
-      for (int i = 0; i < Mesh.nbe; i++)
-        if (Mesh.be(i).label==surfaceLabel)
-      		if (phi[][Mesh.be(i)[0]] == -0.5 && phi[][Mesh.be(i)[1]] == -0.5)
-      			phi[][Mesh.be(i)[2]] = 0.5;
+    string fileName = meshFileName + ".sol";
+    if (fileExists(fileName)) // read the sol file computed before
+      phi[] = readsol(fileName);
+    else
+    {
+      print("Detecting mesh regions...")
+      meshN MeshScaffold = trunc(Mesh, region==scaffoldLabel);
+      SpaceP1 X = x;
+      SpaceP1 Y = y;
+      SpaceP1 Z = z;
+      for (int i = 0; i < SpaceP1.ndof; i++)
+        if (chi(MeshScaffold)(X[][i], Y[][i], Z[][i]) == 1)
+          phi[][i] = 1;
+      phi = phi - 0.5;
+      savesol(fileName, Mesh, phi);
+    }
   }
   else
     phi = box - 0.5;
@@ -87,18 +98,19 @@ broadcast(processor(0), phi[]); // broadcast is a collective task in MPI, so the
 // partition the mesh and create the non-overlapping as well
 if (mpirank == 0)
   print("Partitioning the mesh...")
-real[int] D;
-int[int][int] restriction;
-int[int] n2o;
+
+int[int] n2oOverlap;
+int[int] n2oGlobal;
+NewMacro MeshN2O() n2oGlobal EndMacro
+
+Mat A;
+buildDmesh(Mesh);
+createMat(Mesh, A, Pk)
 {
     fespace SpaceP0Temp(Mesh, P0);
     SpaceP0Temp part;
-    if(mpirank == 0)
-        partitionerSeq(part[], Mesh, mpisize);
-    partitionerPar(part[], Mesh, mpiCommWorld, size);
-    buildWithPartitioning(Mesh, part[], 1, restriction, D, Pk, mpiCommWorld);
-    part = part;
-    MeshNoOverlap = trunc(Mesh, abs(part - mpirank) < 1e-1, new2old = n2o);
+    createPartition(Mesh, part[], P0)
+    MeshNoOverlap = trunc(Mesh, abs(part - 1.0) < 1e-1, new2old = n2oOverlap);
 }
 
 phi = phi;

@@ -21,6 +21,7 @@ if (!refineMeshDuringSimulation) // otherwise these values will (and should) be 
   // the value of h should be the same for all processes
   mpiAllReduce(h, h, mpiCommWorld, mpiMIN);
 }
+h = 0.002;
 
 // store the inital volume size of the scaffold
 // Vinit = int3d(Mesh,optimize=0)(scaffold);

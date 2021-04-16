@@ -36,6 +36,12 @@ load "mshmet"
 load "distance"
 // used to redistancing the distance function of the level set method
 
+load "mmg"
+// used to separate and export the scaffold mesh
+
+load "medit"
+// used to read/write sol files
+
 include "getARGV.idp"
 // load subroutines to read command line arguments
 
