@@ -5,6 +5,7 @@ macro idpFunctions 1 // prevent multiple include statements
 
 macro grad(f) [dx(f), dy(f), dz(f)] //eom
 
+// a set of different print helper macros
 macro print(text)
 {
 	cout << text << endl;
@@ -13,6 +14,48 @@ macro print(text)
 macro printDivider
 {
 	cout << "=============================================================" << endl;
+} //
+
+// I don't know why, but a macro ignores backslashes, so I had to define this as a fucntion
+func int printHeader()
+{
+	cout<<"+-----------------------------------------------------------------+\n";
+	cout<<"|   _  __ _    _  _        ____   _         _____                 |\n";
+	cout<<"|  | |/ /| |  | || |      |  _ \\ (_)       |  __ \\                |\n";
+	cout<<"|  | ' / | |  | || |      | |_) | _   ___  | |  | |  ___   __ _   |\n";
+	cout<<"|  |  <  | |  | || |      |  _ < | | / _ \\ | |  | | / _ \\ / _` |  |\n";
+	cout<<"|  | . \\ | |__| |+ |____  | |_) |+ +| (_) |+ |__| ||  __/| (_| |  |\n";
+	cout<<"|  |_|\\_\\ \\____/ |______| |____/ |_| \\___/ |_____/  \\___| \\__, |  |\n";
+	cout<<"|                                                          __/ |  |\n";
+	cout<<"|                                                         |___/   |\n";
+	cout<<"|                  +-----> Version: 0.2 <-----+                   |\n";
+	cout<<"|                                                                 |\n";
+	cout<<"+-----------------------------------------------------------------+\n";
+	return 0;
+}
+
+// function to define the shape of the scaffold if we want to generate it instead of
+// importing it from a mesh file
+func box = (x > 3.5) * (x < 16.5) * (y > 3.5) * (y < 16.5) * (z > 8) * (z < 12);
+
+// function to initilize distance function based on the node labels of the external mesh.
+// it should be positive inside the scaffold and negative in the medium
+func real processRegion(int region)
+{
+	if (region == scaffoldLabel)
+		return 0.5;
+	else //assuming it is mediumLabel otherwise
+		return -0.5;
+}
+
+macro setCPUTime
+{
+	cpuTime = mpiWtime();
+} //
+
+macro printElapsedTime
+{
+	print("Solved in " + (mpiWtime() - cpuTime) + " s")
 } //
 
 ENDIFMACRO

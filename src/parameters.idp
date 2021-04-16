@@ -18,7 +18,7 @@ string vtkOutputFilename = "output/output-"; // path to text output file
 bool writeVtkOutput = true; // save vtk output or not
 bool saveInitialMesh = false; // whether save initial mesh after refinement in vtk
 
-bool refineInitialMesh = true; // should initial mesh be refined based on distance function
+bool refineInitialMesh = false; // should initial mesh be refined based on distance function, recommended for internal mesh only
 bool refineMeshDuringSimulation = false; // should mesh be refined during simulation
 bool keepPreviousRefinedMesh = false; // adapt the mesh in the interface and do not modify previous refined mesh
 bool doRedistance = false; // whether redistance the distance function during simulation or not
@@ -26,13 +26,19 @@ real scaffoldChangeThreshold = 5.0; // shrink percentage at which mesh should be
 
 
 // Geometry parameters
+bool importMesh = true; // import external mesh or create one using tetgen
+// parameters for importing external mesh
+string meshFileName = "mesh/testMesh.mesh";
+int scaffoldLabel = 2; // scaffold volume label in external mesh file
+int mediumLabel = 3; // medium volume label in external mesh file
+// parameters to generate a mesh using tetgen
 real L = 20.; // length of the main mesh box (mm)
 int meshSize = 32; // number of mesh nodes on each edge of the box
 real mshmetError = 4e-2; // tolerance for mesh refinement, used by mshmet
 
 
 // Time parameters
-real dt = 0.05; // time step (hour)
+real dt = 0.025; // time step (hour)
 int saveEach = 1.0 / dt; // number of steps between each output.
 // Here it is calculated to save every 1.0 hour, assuming dt is a proper multiplier.
 real Tfinal = 22.; // final time (hour)
@@ -45,10 +51,10 @@ real tau = 1; // torquosity of the film
 real eps = 0.55; // porosity of the film
 real del = 1; // constrictivity
 
-real k1 = 2; // film formation rate (1/day)
-real k2 = 1e9; // film disolution rate (mm^6/day.g^2)
-real DMg = 0.00075; // diffusion coefficient of Mg (mm^2/day)
-real DCl = 0.24; // diffusion coefficient of Cl (mm^2/day)
+real k1 = 3; // film formation rate (1/day)
+real k2 = 1e14; // film disolution rate (mm^6/hour.g^2)
+real DMg = 0.001366; // diffusion coefficient of Mg (mm^2/hour)
+real DCl = 0.365589; // diffusion coefficient of Cl (mm^2/hour)
 
 real Mgsolid = 1735.0*1e-6; // Mg density (g/mm^3)
 real Fsolid = 2344.6*1e-6; // density of the film (g/mm^3)

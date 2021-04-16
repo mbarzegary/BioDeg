@@ -21,7 +21,7 @@ if (refineMeshDuringSimulation) // if configured to refine mesh during simulatio
       print("Refining mesh...")
       if (keepPreviousRefinedMesh)
       {
-        Mesh=change(Mesh, fregion= 0); // reset labels of the mesh
+        Mesh=change(Mesh, fregion= 0); // mesh is divided into different labels before, so we should reset the labels first
       }
       else
       { // revert back mesh and interpolate phi because we need it for mesh adaptation criterion

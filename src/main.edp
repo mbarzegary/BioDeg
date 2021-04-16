@@ -4,11 +4,14 @@ include "modules.idp"
 // load subroutines to read command line arguments
 include "getARGV.idp"
 
-// load basic macros
-include "functions.idp"
-
 // simulation, material, geometry, and solver parameters
 include "parameters.idp"
+
+// load basic macros and functions
+include "functions.idp"
+
+// print the program title
+printHeader();
 
 // create and configure the initial mesh
 include "geometry.idp"

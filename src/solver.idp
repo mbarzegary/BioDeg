@@ -3,7 +3,7 @@
 IFMACRO(!idpSolver)
 macro idpSolver 1 // prevent multiple include statements
 
-if (mpirank==0) { print("Solving level set equation...") }
+if (mpirank==0) { print("Solving level set equation..."); setCPUTime }
 
 // solve level set PDE to get phi function
 Ai = shrink(SpaceP1, SpaceP1, tgv=TGV); // left hand side terms
@@ -12,6 +12,8 @@ Bi = shrink(0, SpaceP1); // right hand side terms
 mpiAllReduce(Bi, B, mpiCommWorld, mpiSUM);
 set(A,solver=sparsesolver,master=-1); // solve using MUMPS solver, no need to specify config file (unlike MUMPS_FreeFem)
 phi[] = A^-1 * B; // solve the assembled system
+
+if (mpirank==0) { printElapsedTime }
 
 // phi is changed, so we have to detect the scaffold region again
 scaffold = (phi > 0);
@@ -31,7 +33,7 @@ if (doRedistance) // if it is configured to redistance distance function
   broadcast(processor(0), phi[]);
 }
 
-if (mpirank==0) { print("Solving Mg concentration equation...") }
+if (mpirank==0) { print("Solving Mg concentration equation..."); setCPUTime }
 
 // solve Mg PDE to get Mg concentration
 Ai = magnes(SpaceP1, SpaceP1, tgv=TGV);
@@ -41,7 +43,9 @@ mpiAllReduce(Bi, B, mpiCommWorld, mpiSUM);
 set(A,solver=sparsesolver, master=-1);
 Mg[] = A^-1 * B;
 
-if (mpirank==0) { print("Solving Cl ion concentration equation...") }
+if (mpirank==0) { printElapsedTime }
+
+if (mpirank==0) { print("Solving Cl ion concentration equation..."); setCPUTime }
 
 // solve Cl PDE to get pchloride ion concentration
 Ai = chloride(SpaceP1, SpaceP1, tgv=TGV);
@@ -51,7 +55,9 @@ mpiAllReduce(Bi, B, mpiCommWorld, mpiSUM);
 set(A,solver=sparsesolver, master=-1);
 Cl[] = A^-1 * B;
 
-if (mpirank==0) { print("Solving protective film formation equation...") }
+if (mpirank==0) { printElapsedTime }
+
+if (mpirank==0) { print("Solving protective film formation equation..."); setCPUTime }
 
 // solve film PDE to get protective film concentration
 Ai = film(SpaceP1, SpaceP1, tgv=TGV);
@@ -60,6 +66,8 @@ Bi = film(0, SpaceP1);
 mpiAllReduce(Bi, B, mpiCommWorld, mpiSUM);
 set(A,solver=sparsesolver, master=-1);
 F[] = A^-1 * B;
+
+if (mpirank==0) { printElapsedTime }
 
 scaffold = (phi > 0);
 
