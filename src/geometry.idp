@@ -1,4 +1,4 @@
-// defining the geometry of the scaffold and constructing the msh
+// defining the geometry of the scaffold and constructing the mesh
 
 IFMACRO(!idpGeometry)
 macro idpGeometry 1 // prevent multiple include statements
@@ -48,7 +48,7 @@ if (refineInitialMesh) // adapt initial mesh according to the phi function
   {
     mm = 0.;
     // computing the mesh adaptation index for each element using mshmet to pass it to tetgen
-    mm[]=mshmet(Mesh,(phi>0),normalization=1,aniso=0,nbregul=1,hmin=4e-2,hmax=0.8,err=mshmetError);
+    mm[]=mshmet(Mesh,(phi>0),normalization=1,aniso=0,nbregul=1,hmin=meshMin,hmax=meshMax,err=mshmetError);
     Mesh=tetgreconstruction(Mesh,switch="raAQ",sizeofvolume=mm*mm*mm/6.); // actual mesh refinement using tetgen
   }
   broadcast(processor(0), Mesh);

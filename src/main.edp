@@ -11,7 +11,8 @@ include "parameters.idp"
 include "functions.idp"
 
 // print the program title
-printHeader();
+if (mpirank == 0)
+	printHeader();
 
 // create and configure the initial mesh
 include "geometry.idp"
@@ -25,19 +26,20 @@ include "weak.idp"
 // initial conditions and setup
 include "initial.idp"
 
-// main time lopp
+// main time loop
 for(real t=0.; t<Tfinal; t += dt)
 {
   // due to some differences in different MPI implementations, we should reinitialize the
   // A and b matrices (Ax=b) in each step, so it is the same as if we declare them inside loop
-  matrix A, Ai;
-  real[int] B(SpaceP1.ndof), Bi(SpaceP1.ndof);
+  matrix A;
+  real[int] B(SpaceP1.ndof);
 
   // store previous value of solution spaces, required for finite difference discretization of time
   phiold  = phi;
   Fold = F;
   Mgold = Mg;
   Clold = Cl;
+  OHold = OH;
 
   if (mpirank==0) // saving output as well as calculation of interface velocity are handled in process #0.
   {
@@ -59,6 +61,7 @@ for(real t=0.; t<Tfinal; t += dt)
   broadcast(processor(0), normgradphi[]);
   broadcast(processor(0), DeMg[]);
   broadcast(processor(0), DeCl[]);
+  broadcast(processor(0), DeOH[]);
   broadcast(processor(0), v[]);
 
   // solve the PDEs in parallel and redistance distance function if required

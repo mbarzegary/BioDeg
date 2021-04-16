@@ -4,13 +4,15 @@ IFMACRO(!idpInitial)
 macro idpInitial 1 // prevent multiple include statements
 
 // initial value of domain variables
-Mg = Mgbc*scaffold; // Mg is initialized in scaffold only (equals to saturation concentration)
+Mg = Mgbc*(phi > 0); // Mg is initialized in scaffold only (equals to saturation concentration)
 F = 0; // there is no film at the beginning
 Cl = 3.306e-6*(phi <= 0); // initial concentration of chloride ion in the medium
+OH = 1e-7*(phi <= 0); // initial pH = 7
 
 // initial value of effective diffusion coeffiecients is the same as materials coefficients
 DeMg = DMg;
 DeCl = DCl;
+DeOH = DOH;
 
 if (!refineMeshDuringSimulation) // otherwise these values will (and should) be calculated in each time step
 {

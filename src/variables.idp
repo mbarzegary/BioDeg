@@ -7,15 +7,15 @@ macro idpVariables 1 // prevent multiple include statements
 SpaceP0 scaffold = (phi > 0);
 
 // main dependent variables (the solutions of our problem)
-SpaceP1 Mg, F, Cl;
+SpaceP1 Mg, F, Cl, OH;
 // velocity of the interface and normal of the distance function
 SpaceP1 v, normgradphi;
 // effective diffusion coefficients of Mg and Cl at each mesh node
-SpaceP1 DeMg, DeCl;
+SpaceP1 DeMg, DeCl, DeOH;
 //variables to keep previous step values. used for finite difference descretization of time
-SpaceP1 Mgold, Fold, Clold, phiold;
+SpaceP1 Mgold, Fold, Clold, phiold, OHold;
 // test function used in weak form of the PDEs
-SpaceP1 v1, v2, v3, vp;
+SpaceP1 v1, v2, v3, v4, vp;
 // variables to evaluate the direction of the distance function, used to compute interface velocity
 SpaceP1 xphi, yphi, zphi, dirx, diry, dirz;
 // variable to hold the size of the elements, used to calculate the smallest element size

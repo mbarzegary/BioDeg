@@ -27,6 +27,7 @@ dirz = -h*zphi/normgradphi;
 // compute effective diffusion coefficients
 DeMg = DMg * ((1 - F/Fmax) + (F/Fmax)*del*eps/tau);
 DeCl = DCl * ((1 - F/Fmax) + (F/Fmax)*del*eps/tau);
+DeOH = DOH * ((1 - F/Fmax) + (F/Fmax)*del*eps/tau);
 
 // calculate velocity of the interface
 if(t == 0)
