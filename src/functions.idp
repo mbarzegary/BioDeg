@@ -4,6 +4,8 @@ IFMACRO(!idpFunctions)
 macro idpFunctions 1 // prevent multiple include statements
 
 macro grad(f) [dx(f), dy(f), dz(f)] //eom
+macro div(u) (dx(u#x) + dy(u#y) + dz(u#z))//
+macro Grad(u) [grad(u#x), grad(u#y), grad(u#z)]//
 
 // a set of different print helper macros
 macro print(text)
@@ -31,7 +33,7 @@ func int printHeader()
 	cout<<"|                                                           |\n";
 	cout<<"|              KU Leuven  &  University of Liege            |\n";
 	cout<<"|                                                           |\n";
-	cout<<"|               +------> Version: 0.6 <------+              |\n";
+	cout<<"|               +------> Version: 0.7 <------+              |\n";
 	cout<<"|                                                           |\n";
 	cout<<"+-----------------------------------------------------------+\n";
 	return 0;

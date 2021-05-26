@@ -9,10 +9,14 @@ F = 0; // there is no film at the beginning
 Cl = 5.175e-6*(phi <= 0); // initial concentration of chloride ion in the medium
 OH = 1e-7*(phi <= 0); // initial pH = 7
 
+[ux, uy, uz, p]=[1.0, 1.0, 1.0, 2.0]; // this initialization is necessary for the fieldsplit preconditioner
+[upx, upy, upz, pp]=[0, 0, 0, 0];
+
 // initial value of effective diffusion coeffiecients is the same as materials coefficients
 DeMg = DMg;
 DeCl = DCl;
 DeOH = DOH;
+mue = mu;
 
 if (!refineMeshDuringSimulation) // otherwise these values will (and should) be calculated in each time step
 {
@@ -50,5 +54,7 @@ dtRedistance = dtRedistance >= dt ? dtRedistance : dt;
 // calculate the value of alpha
 alpha = calculateAlpha(0, Mgsolid, Mgbc, DMg);
 
+set(A, sparams = aParams);
+set(NS, sparams = nsParams, fields = ux[], names = names);
 
 ENDIFMACRO

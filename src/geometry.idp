@@ -29,6 +29,7 @@ MeshBackup = Mesh;
 // creating Finite element spaces
 fespace SpaceP1(Mesh, Pk); // used for all the dependent variables and distance funtion
 fespace SpaceP0(Mesh, P0); // used to calculate the available scaffold volume
+fespace SpaceVector(Mesh, PkVector); // used for the vecotr space of fluid flow
 
 SpaceP1 phi = 0; // main distance function, positive inside and negative outside of the scaffold
 SpaceP1 phiTemp; // temporary variable for redistancing distance function
@@ -50,8 +51,12 @@ if (mpirank == 0)
       SpaceP1 Y = y;
       SpaceP1 Z = z;
       for (int i = 0; i < SpaceP1.ndof; i++)
+      {
         if (chi(MeshScaffold)(X[][i], Y[][i], Z[][i]) == 1)
           phi[][i] = 1;
+        cout << "\rProcessed: " << i << " / " << SpaceP1.ndof;
+      }
+      print("")
       phi = phi - 0.5;
       savesol(fileName, Mesh, phi);
     }
@@ -103,9 +108,18 @@ int[int] n2oOverlap;
 int[int] n2oGlobal;
 NewMacro MeshN2O() n2oGlobal EndMacro
 
-Mat A;
+Mat NS, A;
 buildDmesh(Mesh);
-createMat(Mesh, A, Pk)
+{
+  macro def(i)[i, i#B, i#C, i#D]//
+  macro init(i)[i, i, i, i]//
+  createMat(Mesh, NS, PkVector)
+}
+{
+  macro def(i)i//
+  macro init(i)i//
+  createMat(Mesh, A, Pk)
+}
 {
     fespace SpaceP0Temp(Mesh, P0);
     SpaceP0Temp part;

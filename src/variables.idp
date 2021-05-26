@@ -12,10 +12,14 @@ SpaceP1 Mg, F, Cl, OH;
 SpaceP1 v, normgradphi;
 // effective diffusion coefficients of Mg and Cl at each mesh node
 SpaceP1 DeMg, DeCl, DeOH;
-//variables to keep previous step values. used for finite difference descretization of time
+// variables to keep previous step values. used for finite difference descretization of time
 SpaceP1 Mgold, Fold, Clold, phiold, OHold;
 // variables to evaluate the direction of the distance function, used to compute interface velocity
 SpaceP1 xphi, yphi, zphi, dirx, diry, dirz;
+// main vector state variables for the fluid flow
+SpaceVector [ux, uy, uz, p];
+SpaceVector [upx, upy, upz, pp]; // previous time step values
+SpaceP0 mue; // effective mu
 // variable to hold the size of the elements, used to calculate the smallest element size
 SpaceP1 hhh;
 real h; // smallest element size, used to compute interface velocity
@@ -38,7 +42,10 @@ real timeToRedistance = 0;  // incremental variable to determine whether redista
 real cpuTime; // variable to calculate time elapsed in tasks
 real glob, loc; // variables used for collecting the volume size over partitioned mesh blocks
 
-int[int] orderOut = [1, 1, 1, 1, 1]; // used to save the vtk output in point data (instead of cell data)
+int[int] orderOut = [1, 1, 1, 1, 1, 1, 1, 1, 1]; // used to save the vtk output in point data (instead of cell data)
 
+int temporalMult = solveFluidFlow ? 0 : 1; // used to enable-disable second temporal terms in weak forms
+int convectMult = solveFluidFlow ? 1 : 0; // used to enable-disable convection terms in weak forms
+int NSMult = solveFullNavierStokes ? 1 : 0; //used to convert NS equation to Stokes equation in its weak form
 
 ENDIFMACRO

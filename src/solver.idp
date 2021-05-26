@@ -9,7 +9,6 @@ if (mpirank==0) { print("Solving level set equation..."); setCPUTime }
 Loc = shrink(SpaceP1, SpaceP1); // left hand side terms
 B = shrink(0, SpaceP1); // right hand side terms
 A = Loc;
-set(A, sparams = phiParams);
 phi[] = A^-1 * B; // solve the assembled system
 
 if (mpirank==0) { printElapsedTime }
@@ -17,7 +16,7 @@ if (mpirank==0) { printElapsedTime }
 // phi is changed, so we have to detect the scaffold region again
 scaffold = (phi > 0);
 
-// this commented block of cod is not yet compatible with the new parallelization approach
+// this commented block of code is not yet compatible with the new parallelization approach
 // if (doRedistance) // if it is configured to redistance distance function
 // {
 //   if (mpirank==0) // redistancing is performed only in process #0
@@ -39,7 +38,6 @@ if (mpirank==0) { print("Solving Mg concentration equation..."); setCPUTime }
 Loc = magnes(SpaceP1, SpaceP1);
 B = magnes(0, SpaceP1);
 A = Loc;
-set(A, sparams = mgParams);
 Mg[] = A^-1 * B;
 
 if (mpirank==0) { printElapsedTime }
@@ -50,7 +48,6 @@ if (mpirank==0) { print("Solving Cl ion concentration equation..."); setCPUTime 
 Loc = chloride(SpaceP1, SpaceP1);
 B = chloride(0, SpaceP1);
 A = Loc;
-set(A, sparams = clParams);
 Cl[] = A^-1 * B;
 
 if (mpirank==0) { printElapsedTime }
@@ -61,7 +58,6 @@ if (mpirank==0) { print("Solving protective film formation equation..."); setCPU
 Loc = film(SpaceP1, SpaceP1);
 B = film(0, SpaceP1);
 A = Loc;
-set(A, sparams = filmParams);
 F[] = A^-1 * B;
 
 if (mpirank==0) { printElapsedTime }
@@ -72,10 +68,25 @@ if (mpirank==0) { print("Solving pH equation..."); setCPUTime }
 Loc = hydroxide(SpaceP1, SpaceP1);
 B = hydroxide(0, SpaceP1);
 A = Loc;
-set(A, sparams = ohParams);
 OH[] = A^-1 * B;
 
 if (mpirank==0) { printElapsedTime }
+
+if (solveFluidFlow)
+{
+  if (count % solveFluidEach == 0)
+  {
+    if (mpirank==0) { print("Solving Navier-Stokes equation..."); setCPUTime }
+
+    // solve NS PDE to get the fluid velocity field
+    NS = navierstokes(SpaceVector, SpaceVector, tgv=-1);
+    NSrhs = navierstokes(0, SpaceVector, tgv=-1);
+    ux[] = 0;
+    ux[] = NS^-1 * NSrhs;
+
+    if (mpirank==0) { printElapsedTime }
+  }
+}
 
 scaffold = (phi > 0);
 

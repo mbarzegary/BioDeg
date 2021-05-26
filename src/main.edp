@@ -30,6 +30,8 @@ include "initial.idp"
 // Mat A(SpaceP1.ndof, restriction, D);
 matrix Loc;
 real[int] B(SpaceP1.ndof);
+real[int] NSrhs(SpaceVector.ndof);
+// set(NS, sparams = nsParams, fields = ux[], names = names);
 
 // main time loop
 for(real t=0.; t<Tfinal; t += dt)
@@ -43,6 +45,8 @@ for(real t=0.; t<Tfinal; t += dt)
   Mgold = Mg;
   Clold = Cl;
   OHold = OH;
+  if (count) // not in the first step
+    [upx, upy, upz, pp] = [ux, uy, uz, p];
 
   loc = intN(MeshNoOverlap)(scaffold);
   glob = 0;

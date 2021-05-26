@@ -29,6 +29,8 @@ dirz = -h*zphi/normgradphi;
 DeMg = DMg * ((1 - F/Fmax) + (F/Fmax)*del*eps/tau);
 DeCl = DCl * ((1 - F/Fmax) + (F/Fmax)*del*eps/tau) * (phi <= 0);
 DeOH = DOH * ((1 - F/Fmax) + (F/Fmax)*del*eps/tau) * (phi <= 0);
+mue = mu * (phi <= 0);
+// mue = mu * scaffold;
 
 // calculate velocity of the interface
 if (t == 0)

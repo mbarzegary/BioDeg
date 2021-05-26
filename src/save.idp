@@ -10,7 +10,11 @@ if (count % saveEach == 0) // results should be saved in current time step
     if (mpirank == 0)
       print ("Saving VTK file...")
 
-    savevtk(vtkOutputFilename+".vtu", Mesh, phi, Mg, F, Cl, OH, dataname="phi Mg F Cl OH",
+    if (writeFlowFieldOutput)
+      savevtk(vtkOutputFilename+".vtu", Mesh, phi, Mg, F, Cl, OH, ux, uy, uz, p, dataname="phi Mg F Cl OH u v w p",
+            order = orderOut, append = count ? true : false);
+    else
+      savevtk(vtkOutputFilename+".vtu", Mesh, phi, Mg, F, Cl, OH, dataname="phi Mg F Cl OH",
             order = orderOut, append = count ? true : false);
   }
 
