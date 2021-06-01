@@ -1,6 +1,22 @@
 # BioDeg, a biodegradation and corrosion simulation code for metallic materials
 
-This repository contains the source code of BioDeg, a code for simulating  mathematical models of biodegradation and corrosion process of metallic materials. This code has been used in the following publications so far, so please cite these if you are interested in using the code for your own research.
+## About
+
+This repository contains the source code of BioDeg, a code for simulating the  biodegradation and corrosion behavior of metallic materials.
+
+<img src="doc/screw_degradation.jpg" width="600" height="auto">
+<p>
+
+The developed model captures the release of metallic ions, changes in pH, the formation of a protective film, the dissolution of this film in presence of different ions, and the effect of perfusion of the surrounding fluid. This has been accomplished by deriving a system of time-dependent reaction-diffusion-convection partial differential equations from the underlying oxidation-reduction reactions. The level set formalism is employed to track the biodegradation interface between the material and its surroundings. The equations were solved implicitly using the finite element method for spatial terms (with a 1st order Lagrange polynomial as the shape function) and the backward-Euler finite difference method for temporal terms on an Eulerian mesh.
+
+Tracking the moving corrosion front at the diffusion interface requires high numerical accuracy of the diffusive state variables, which is commonly achieved using a refined computational grid. This makes the model computationally intensive and in need of parallelization (the models usually have 10-20 millions of elements in 3D). The parallel algorithm is implemented using a domain decomposition method (restricted additive Schwarz). Beside this, the formed linear system of equations in each partition of the mesh is solved using Krylov methods by taking advantage of the highly-efficient preconditioners and iterative solvers of the PETSc library.
+
+For more details about the mathematical and computational models, please refer to the published works.
+
+
+## Publications and referencing
+
+This code has been used in the following publications so far. In scientific works, where results to some extent are obtained using BioDeg, please cite the following articles:
 
     @misc{barzegari2020highly,
           title={Highly scalable numerical simulation of coupled reaction-diffusion systems with moving interfaces},
