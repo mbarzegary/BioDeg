@@ -29,7 +29,7 @@ bool saveLastTimeStep = true; // save the last state of the model in vtu
 bool refineInitialMesh = false; // should initial mesh be refined based on distance function, recommended for internal mesh only
 bool refineMeshDuringSimulation = false; // should mesh be refined during simulation
 bool keepPreviousRefinedMesh = false; // adapt the mesh in the interface and do not modify previous refined mesh
-bool doRedistance = false; // whether redistance the distance function during simulation or not
+bool doRedistance = true; // whether redistance the distance function during simulation or not
 real scaffoldChangeThreshold = 5.0; // shrink percentage at which mesh should be refined again
 
 bool solveFluidFlow = true; // solve the fluid flow equation or not
@@ -62,7 +62,7 @@ int saveEach = 0.25 / dt; // number of steps between each output.
 // Here it is calculated to save every 1.0 hour, assuming dt is a proper multiplier.
 real Tfinal = 21.; // final time (hour)
 Tfinal += dt;
-real dtRedistance = 0.05; // time to each redistance of the distance funtion
+real dtRedistance = 1.0; // time to each redistance of the distance funtion
 
 // Export scaffold mesh paramters
 bool exportScaffoldMesh = false;

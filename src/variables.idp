@@ -37,7 +37,7 @@ int changed = 0;
 
 real conv; // variable to hold the multiplier coefficient of hydrogen evolution equation
 real count = 0; // number of current time step iteration
-real timeToRedistance = 0;  // incremental variable to determine whether redistancing should be performed in current time step or not
+real timeToRedistance = dtRedistance;  // incremental variable to determine whether redistancing should be performed in current time step or not
 
 real cpuTime; // variable to calculate time elapsed in tasks
 real glob, loc; // variables used for collecting the volume size over partitioned mesh blocks
