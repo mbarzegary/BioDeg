@@ -14,7 +14,7 @@ varf magnes(Mg, v1) =
   intN(Mesh,qfV=qfV1lump,optimize=0)(Mg/dt*v1)
   + intN(Mesh,qfV=qfV1lump,optimize=0)(temporalMult * Mgold/dt*v1)
   + intN(Mesh)( DeMg*(dx(Mg)*dx(v1) + dy(Mg)*dy(v1) + dz(Mg)*dz(v1)) )
-  + intN(Mesh)(convectMult * convect([upx, upy, upz], -dt, Mgold)*v1/dt)
+  + intN(Mesh)(convectMult * (phi <= 0)*convect([upx, upy, upz], -dt, Mgold)*v1/dt)
   - intN(Mesh,qfV=qfV1lump)((phi <= 0)*k1*Mg*F/Fmax*v1)
   + intN(Mesh,qfV=qfV1lump)((phi <= 0)*k1*Mg*v1)
   + intN(Mesh,qfV=qfV1lump)((phi <= 0)*k2*F*Cl*Cl*v1)
@@ -36,9 +36,9 @@ varf chloride(Cl, v3) =
   intN(Mesh,qfV=qfV1lump,optimize=0)(Cl*v3/dt)
   + intN(Mesh,qfV=qfV1lump,optimize=0)(temporalMult * Clold*v3/dt)
   + intN(Mesh)( DeCl*(dx(Cl)*dx(v3) + dy(Cl)*dy(v3) + dz(Cl)*dz(v3)) )
-  + intN(Mesh)(convectMult * convect([upx, upy, upz], -dt, Clold)*v3/dt)
-  + intN(Mesh,qfV=qfV1lump)((phi > 0)*TGV*Cl*v3)
-  + intN(Mesh,qfV=qfV1lump)((phi > 0)*TGV*Clbc*v3)
+  + intN(Mesh)(convectMult * (phi <= 0)*convect([upx, upy, upz], -dt, Clold)*v3/dt)
+  // + intN(Mesh,qfV=qfV1lump)((phi > 0)*TGV*Cl*v3)
+  // + intN(Mesh,qfV=qfV1lump)((phi > 0)*TGV*Clbc*v3)
 ;
 
 // weak form of OH ion concentration PDE
@@ -46,10 +46,10 @@ varf hydroxide(OH, v4) =
   intN(Mesh,qfV=qfV1lump,optimize=0)(OH*v4/dt)
   + intN(Mesh,qfV=qfV1lump,optimize=0)(temporalMult * OHold*v4/dt)
   + intN(Mesh)( DeOH*(dx(OH)*dx(v4) + dy(OH)*dy(v4) + dz(OH)*dz(v4)) )
-  + intN(Mesh)(convectMult * convect([upx, upy, upz], -dt, OHold)*v4/dt)
+  + intN(Mesh)(convectMult * (phi <= 0)*convect([upx, upy, upz], -dt, OHold)*v4/dt)
   + intN(Mesh,qfV=qfV1lump)((phi <= 0)*k2*F*Cl*Cl*v4)
-  + intN(Mesh,qfV=qfV1lump)((phi > 0)*TGV*OH*v4)
-  + intN(Mesh,qfV=qfV1lump)((phi > 0)*TGV*OHbc*v4)
+  // + intN(Mesh,qfV=qfV1lump)((phi > 0)*TGV*OH*v4)
+  // + intN(Mesh,qfV=qfV1lump)((phi > 0)*TGV*OHbc*v4)
 ;
 
 // weak form of the level set PDE
