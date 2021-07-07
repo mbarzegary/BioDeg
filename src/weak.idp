@@ -61,15 +61,15 @@ varf shrink(phi, vp) =
 
 // weak form of the Navier-Stokes PDE
 varf navierstokes([ux, uy, uz, p], [uhx, uhy, uhz, ph]) =
-  intN(Mesh)(NSMult * rho/dt * [ux, uy, uz]' * [uhx, uhy, uhz])
+  intN(Mesh)(NSMult * 1/dt * [ux, uy, uz]' * [uhx, uhy, uhz])
   + intN(Mesh)(
-    + mue * (Grad(u):Grad(uh))
+    + nue * (Grad(u):Grad(uh))
     - p * div(uh)
     - ph * div(u)
     - 1e-10 * p*ph
     )
   + intN(Mesh) (
-    NSMult * rho/dt * [convect([upx, upy, upz], -dt, upx), convect([upx, upy, upz], -dt, upy),
+    NSMult * 1/dt * [convect([upx, upy, upz], -dt, upx), convect([upx, upy, upz], -dt, upy),
                convect([upx, upy, upz], -dt, upz)]'* [uhx, uhy, uhz]
     )
   + intN(Mesh)(scaffold*tgv*ux*uhx)

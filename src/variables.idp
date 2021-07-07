@@ -19,7 +19,7 @@ SpaceP1 xphi, yphi, zphi, dirx, diry, dirz;
 // main vector state variables for the fluid flow
 SpaceVector [ux, uy, uz, p];
 SpaceVector [upx, upy, upz, pp]; // previous time step values
-SpaceP0 mue; // effective mu
+SpaceP0 nue; // effective mu
 // variable to hold the size of the elements, used to calculate the smallest element size
 SpaceP1 hhh;
 real h; // smallest element size, used to compute interface velocity

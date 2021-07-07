@@ -79,8 +79,7 @@ real del = 1; // constrictivity
 real uInX = 0.1; // inlet velocity
 real uInY = 0;
 real uInZ = 0;
-real rho = 0.001;
-real mu = 0.001;
+real nu = 0.85;
 
 real k1 = getARGV("-k1", 7.); // film formation rate (1/hour)
 real k2 = getARGV("-k2", 1e15); // film disolution rate (mm^6/hour.g^2)

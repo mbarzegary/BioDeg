@@ -16,7 +16,7 @@ OH = 1e-7*(phi <= 0); // initial pH = 7
 DeMg = DMg;
 DeCl = DCl;
 DeOH = DOH;
-mue = mu;
+nue = nu;
 
 if (!refineMeshDuringSimulation) // otherwise these values will (and should) be calculated in each time step
 {
