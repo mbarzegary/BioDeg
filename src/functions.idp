@@ -41,7 +41,8 @@ func int printHeader()
 
 // function to define the shape of the scaffold if we want to generate it instead of
 // importing it from a mesh file
-func box = (x > 3.5) * (x < 16.5) * (y > 3.5) * (y < 16.5) * (z > 8) * (z < 12);
+func box = (x > (L/2 - cuboidX/2)) * (x < (L/2 + cuboidX/2)) * (y > (L/2 - cuboidY/2)) * (y < (L/2 + cuboidY/2))
+				 * (z > (L/2 - cuboidZ/2)) * (z < (L/2 + cuboidZ/2));
 
 // function to initilize distance function based on the node labels of the external mesh.
 // it should be positive inside the scaffold and negative in the medium

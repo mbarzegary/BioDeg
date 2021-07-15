@@ -51,8 +51,11 @@ int Outlet = 5; // outlet surface label in the external mesh for fluid flow
 
 // parameters to generate a mesh using tetgen
 real L = 20.; // length of the main mesh box (mm)
+real cuboidX  = 13.; // size of the cuboid in X direction (mm)
+real cuboidY  = 13.; // size of the cuboid in Y direction (mm)
+real cuboidZ  = 4.; // size of the cuboid in Z direction (mm)
 int meshSize = 32; // number of mesh nodes on each edge of the box
-real mshmetError = 4e-2; // tolerance for mesh refinement, used by mshmet
+real mshmetError = 1e-2; // tolerance for mesh refinement, used by mshmet
 real meshMin = 4e-2; // minimum size of elements during mesh refinement
 real meshMax = 0.8; // minimum size of elements during mesh refinement
 
