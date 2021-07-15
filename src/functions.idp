@@ -33,7 +33,7 @@ func int printHeader()
 	cout<<"|                                                           |\n";
 	cout<<"|              KU Leuven  &  University of Liege            |\n";
 	cout<<"|                                                           |\n";
-	cout<<"|               +------> Version: 0.7 <------+              |\n";
+	cout<<"|               +------> Version: 0.8 <------+              |\n";
 	cout<<"|                                                           |\n";
 	cout<<"+-----------------------------------------------------------+\n";
 	return 0;

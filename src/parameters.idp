@@ -92,8 +92,11 @@ real Fsolid = 2344.6*1e-6; // density of the film (g/mm^3)
 real Fcoef = getARGV("-fcoef", 1.);
 real Fmax = Fsolid * (1 - eps) * Fcoef; // maximum protective film concentration (g/mm^3)
 real Mgbc = 134.*1e-6; // Mg saturation concentration (g/mm^3)
-real Clbc = 0; // Cl saturation concentration (g/mm^3)
-real OHbc = 1e-7; // concentration of OH at the boundary of scaffold (g/mm^3)
+real Clinital = 5.175e-6; // initial Cl concentration (g/mm^3)
+real OHinitla = 1e-7; // initial concentration of OH (g/mm^3)
+// real Clbc = 0; // Cl saturation concentration (g/mm^3)
+// real OHbc = 1e-7; // concentration of OH at the boundary of scaffold (g/mm^3)
+
 
 real alphaCoeff = getARGV("-acoef", 0.); // value that will be multiplied to the calucalted alphaCoeff
 // a zero alphaCoeff leads to no initial velocity of interface
