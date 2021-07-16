@@ -37,6 +37,12 @@ bool solveFullNavierStokes = true; // otherwise it solves only the Stokes equati
 bool writeFlowFieldOutput = true; // write the velocity components and pressure to the vtk file or not
 int solveFluidEach = 10;
 
+bool solveMgEquation = true; // solve the Mg equation or not
+bool solveFilmEquation = true; // solve the Film equation or not
+bool solveClEquation = true; // solve the chloride equation or not
+bool solveOHEquation = true; // solve the hydroxide equation or not
+bool solveLevelSet = true; // solve the moving interface equation or not
+
 // Geometry parameters
 bool importMesh = true; // import external mesh or create one using tetgen
 // parameters for importing external mesh
