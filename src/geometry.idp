@@ -70,6 +70,7 @@ if (refineInitialMesh) // adapt initial mesh according to the phi function
 {
   if (mpirank == 0) // mesh refinement is done only in one process
   {
+    print("Refining mesh ...")
     mm = 0.;
     // computing the mesh adaptation index for each element using mshmet to pass it to tetgen
     mm[]=mshmet(Mesh,(phi>0),normalization=1,aniso=0,nbregul=1,hmin=meshMin,hmax=meshMax,err=mshmetError);
