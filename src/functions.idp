@@ -11,11 +11,12 @@ macro Grad(u) [grad(u#x), grad(u#y), grad(u#z)]//
 macro print(text)
 {
 	cout << text << endl;
+	cout.flush;
 } //
 
 macro printDivider
 {
-	cout << "=============================================================" << endl;
+	print("=============================================================");
 } //
 
 // I don't know why, but a macro ignores backslashes, so I had to define this as a fucntion
