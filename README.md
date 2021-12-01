@@ -100,3 +100,10 @@ You can specify the number of employed cores (which also implies the number of m
 * Ability to switch between full Navier-Stokes and Stokes equation
 * Ability to turn off flow effect and equation (or adjust if it should be solved every N steps)
 * Fieldsplit preconditioners for fluid flow equation
+
+#### Version 0.8 (November 2021)
+* Replacing density and viscosity with dynamic viscosity in fluid equations
+* Rewriting the redistancing code to be compatible with the parallelization scheme
+* Considering the porous characteristic of the film for the fluid equation
+* Fixing the convection behavior on the moving corrosion interface
+* Fixing the MPI buffer issue in Windows
