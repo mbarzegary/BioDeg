@@ -26,16 +26,18 @@ This code has been used in the following publications so far. In scientific work
           pages = {109674},
           year = {2021},
           issn = {0010-938X},
-          doi = {https://doi.org/10.1016/j.corsci.2021.109674},
+          doi = {10.1016/j.corsci.2021.109674},
     }
 
-    @misc{barzegari2020highly,
-          title={Highly scalable numerical simulation of coupled reaction-diffusion systems with moving interfaces},
-          author={Mojtaba Barzegari and Liesbet Geris},
-          year={2020},
-          eprint={2008.11057},
-          archivePrefix={arXiv},
-          primaryClass={cs.CE}
+    @article{barzegari2021hpc,
+          author = {Mojtaba Barzegari and Liesbet Geris},
+          title ={Highly scalable numerical simulation of coupled reaction–diffusion systems with moving interfaces},
+          journal = {The International Journal of High Performance Computing Applications},
+          volume = {0},
+          number = {0},
+          pages = {10943420211045939},
+          year = {0},
+          doi = {10.1177/10943420211045939},
     }
 
 ## Getting started
