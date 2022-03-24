@@ -61,6 +61,13 @@ for(real t=0.; t<Tfinal; t += dt)
     + "    % Change: " + ((Vinit - scaffoldSize) / Vinit * 100))
     printDivider;
   }
+
+  if (((Vinit - scaffoldSize) / Vinit) >= 0.98) // the scaffold is almost fully degraded
+  {
+    print("The part is fully degraded!");
+    break; // stop the simulation
+  }
+  
   // save output to disk if it should be
   include "save.idp"
 
