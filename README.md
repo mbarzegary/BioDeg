@@ -18,7 +18,7 @@ For more details about the mathematical and computational models, please refer t
 
 This code has been used in the following publications so far. In scientific works, where results to some extent are obtained using BioDeg, please cite the following articles:
 
-    @article{barzegari2021computational,
+    @article{Barzegari2021,
           title = {Computational modeling of degradation process of biodegradable magnesium biomaterials},
           author = {Mojtaba Barzegari and Di Mei and Sviatlana V. Lamaka and Liesbet Geris},
           journal = {Corrosion Science},
@@ -29,14 +29,14 @@ This code has been used in the following publications so far. In scientific work
           doi = {10.1016/j.corsci.2021.109674},
     }
 
-    @article{barzegari2021hpc,
+    @article{Barzegari2022,
           author = {Mojtaba Barzegari and Liesbet Geris},
           title ={Highly scalable numerical simulation of coupled reaction–diffusion systems with moving interfaces},
           journal = {The International Journal of High Performance Computing Applications},
-          volume = {0},
-          number = {0},
-          pages = {10943420211045939},
-          year = {0},
+          volume = {36},
+          number = {2},
+          pages = {198-213},
+          year = {2022},
           doi = {10.1177/10943420211045939},
     }
 
