@@ -1,5 +1,8 @@
 # BioDeg, a biodegradation and corrosion simulation code for metallic materials
 
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.04281/status.svg)](https://doi.org/10.21105/joss.04281)
+[![license: GPL v3](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE)
+
 ## About
 
 This repository contains the source code of BioDeg, a code for simulating the  biodegradation and corrosion behavior of metallic materials.
