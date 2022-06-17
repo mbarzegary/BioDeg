@@ -43,6 +43,19 @@ This code has been used in the following publications so far. In scientific work
           doi = {10.1177/10943420211045939},
     }
 
+    @article{Barzegari2022JOSS,
+          author = {Mojtaba Barzegari and Liesbet Geris},
+          title = {BioDeg: A finite element software for the simulation of the corrosion and biodegradation process in metallic biomaterials},
+          journal = {Journal of Open Source Software},
+          year = {2022},
+          publisher = {The Open Journal},
+          volume = {7},
+          number = {74},
+          pages = {4281},
+          doi = {10.21105/joss.04281},
+}
+
+
 ## Getting started
 
 The code is implemented in FreeFEM, a domain-specific language for finite element computing. So, a parallel version of FreeFEM should be installed. A proper MPI runtime is required to run parallel FreeFEM (such as OpenMPI or MPICH). The PETSc module should also be installed and linked to FreeFEM (which is usually the default config for installing/compiling FreeFEM). The installation procedure can be found [here](https://doc.freefem.org/introduction/installation.html) for different platforms.
