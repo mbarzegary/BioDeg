@@ -5,7 +5,7 @@
 
 ## About
 
-This repository contains the source code of BioDeg, a code for simulating the  biodegradation and corrosion behavior of metallic materials.
+This repository contains the source code of BioDeg, a code for simulating the  biodegradation and corrosion behavior of metallic materials. A full release of BioDeg, including a graphical user interface (GUI), the computational core (this repository), user manual, theory guide, and preprocessor can be found and downloaded from [this repository](https://github.com/mbarzegary/BioDeg-UI).
 
 <img src="doc/screw_degradation.jpg" width="600" height="auto">
 <p>
