@@ -58,7 +58,7 @@ This code has been used in the following publications so far. In scientific work
 
 ## Getting started
 
-The code is implemented in FreeFEM, a domain-specific language for finite element computing. So, a parallel version of FreeFEM should be installed. A proper MPI runtime is required to run parallel FreeFEM (such as OpenMPI or MPICH). The PETSc module should also be installed and linked to FreeFEM (which is usually the default config for installing/compiling FreeFEM). The installation procedure can be found [here](https://doc.freefem.org/introduction/installation.html) for different platforms.
+The code is implemented in FreeFEM, a domain-specific language for finite element computing. So, a parallel version of FreeFEM should be installed. A proper MPI runtime is required to run parallel FreeFEM (such as OpenMPI or MPICH). The PETSc module should also be installed and linked to FreeFEM (which is usually the default config for installing/compiling FreeFEM). The installation procedure can be found [here](https://doc.freefem.org/introduction/installation.html) for different platforms. **Please note** that a minor bug is associated with the released version of FreeFEM v4.15, preventing BioDeg from functioning properly. So, make sure to install either v4.14 or newer versions than v4.15.
 
 After installing the required software packages, the code can be run like this:
 
